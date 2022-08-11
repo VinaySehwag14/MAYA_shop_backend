@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const OrderSchema = new Schema(
@@ -16,7 +16,7 @@ const OrderSchema = new Schema(
       },
     ],
     amount: { type: Number, required: true },
-    address: { type: Obiect, required: true },
+    address: { type: Object, required: true },
     status: { type: String, default: "pending" },
   },
   { timestamps: true }
