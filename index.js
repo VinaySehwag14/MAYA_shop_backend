@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 5000;
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const userRoute = require("./routes/user");
@@ -8,8 +8,11 @@ const authRoute = require("./routes/auth");
 const productRoute = require("./routes/product");
 const cartRoute = require("./routes/cart");
 const orderRoute = require("./routes/order");
-
+const cors = require("cors");
 dotenv.config();
+
+//*uses cors for cross platform accessing
+app.use(cors());
 
 mongoose
   .connect(process.env.MONGO_URL)

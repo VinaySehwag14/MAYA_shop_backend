@@ -7,10 +7,11 @@ const ProductSchema = new Schema(
     desc: { type: String, required: true },
     img: { type: String, required: true },
     categories: { type: Array },
-    size: { type: String },
-    color: { type: String },
+    size: { type: Array },
+    color: { type: Array },
     price: { type: Number, required: true },
   },
   { timestamps: true }
 );
 module.exports = mongoose.model("Product", ProductSchema);
+// inStock: { type: Boolean, default: true },
