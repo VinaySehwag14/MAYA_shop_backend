@@ -6,7 +6,7 @@ const {
   verifyTokenAndAdmin,
 } = require("./verifyToken");
 
-//CREATE
+//*CREATE a product
 
 router.post("/", verifyTokenAndAdmin, async (req, res) => {
   const newProduct = new Product(req.body);
@@ -19,7 +19,7 @@ router.post("/", verifyTokenAndAdmin, async (req, res) => {
   }
 });
 
-//UPDATE
+//*UPDATE a product
 router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -35,7 +35,7 @@ router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
   }
 });
 
-//DELETE
+//*DELETE a product
 router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -45,7 +45,7 @@ router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
   }
 });
 
-//GET PRODUCT
+//*GET a product
 router.get("/find/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -55,7 +55,7 @@ router.get("/find/:id", async (req, res) => {
   }
 });
 
-//GET ALL PRODUCTS
+//*GET all products
 router.get("/", async (req, res) => {
   const qNew = req.query.new;
   const qCategory = req.query.category;
