@@ -1,40 +1,46 @@
 const router = require("express").Router();
-const Stripe = require("stripe");
-
-// const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const stripe = Stripe(
-  "sk_test_51KYOieSHTjC3fJnaXrxlEwFFv0nfACYlAZas3li4NGUeJzA4LxKtoiRkNp8ALdeOScZrARMEqYXix7f1AY7m8jXQ00AFX4l43h"
-);
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 router.post("/payment", async (req, res) => {
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: req.body.amount,
-      currency: "usd",
-      payment_method_types: ["card"],
+    const payment = await instance.orders.create({
+      amount: req.body.amount * 100, // amount is in paisa, so multiply by 100
+      currency: "INR",
+      payment_capture: 1,
     });
-    res.json({ clientSecret: paymentIntent.client_secret });
-  } catch (err) {
-    res.status(400).json({ error: { message: e.message } });
+
+    res.send({
+      paymentId: payment.id,
+      amount: payment.amount,
+      currency: payment.currency,
+      orderId: payment.order_id,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
-// router.post("/payment", (req, res) => {
-//   stripe.paymentIntents.create(
-//     {
-//       source: req.body.tokenId,
-//       amount: req.body.amount,
-//       currency: "usd",
-//       payment_method_types: ["card"],
-//     },
-//     (stripeErr, stripeRes) => {
-//       if (stripeErr) {
-//         res.status(500).json(stripeErr);
-//       } else {
-//         console.log(stripeRes, "this is stript res");
-//         res.status(200).json(stripeRes);
-//       }
-//     }
-//   );
-// });
+
+router.post("/success", async (req, res) => {
+  try {
+    const { paymentId, orderId, signature } = req.body;
+
+    const shasum = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+    shasum.update(`${paymentId}|${orderId}`);
+    const digest = shasum.digest("hex");
+
+    if (digest !== signature) {
+      return res.status(400).json({ error: "Invalid signature" });
+    }
+
+    res.send("Payment successful!");
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;
